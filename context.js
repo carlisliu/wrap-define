@@ -69,7 +69,7 @@ Context.prototype = {
     }
 };
 
-export function create(name) {
+export default function create(name) {
     var context = new Context(name);
     context.id = addAsyncListener({
         create: function() {
@@ -86,11 +86,11 @@ export function create(name) {
             }
         },
         error: function(storage, error) {
-            if (storage) {
-                context.exit(storage);
-            }
             if (error && error['__context__']) {
                 error['moduleId'] = error['__context__'];
+            }
+            if (storage) {
+                context.exit(storage);
             }
         }
     });
