@@ -1,3 +1,4 @@
+import window from 'window';
 import decorate from './decorate';
 
 export default function wrapDefine() {
@@ -16,7 +17,7 @@ export default function wrapDefine() {
         return;
     }
 
-    Object.defineProperty(window, 'define' {
+    Object.defineProperty(window, 'define', {
         get: function() {
             return getter.apply(this, arguments);
         },
