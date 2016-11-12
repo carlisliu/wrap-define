@@ -1,3 +1,7 @@
+/**
+* borrow from https://github.com/othiym23/async-listener
+*/
+
 var uid = 0;
 var listeners = [];
 
@@ -54,7 +58,6 @@ function addAsyncListener(callbacks, data) {
     listener = callbacks;
   }
 
-  // Make sure the listener isn't already in the list.
   var registered = false;
   for (var i = 0; i < listeners.length; i++) {
     if (listener === listeners[i]) {
@@ -71,10 +74,8 @@ function addAsyncListener(callbacks, data) {
 export default function wrapCallback(original) {
   var length = listeners.length;
 
-  // no context to capture, so avoid closure creation
   if (length === 0) return original;
 
-  // capture the active listeners as of when the wrapped function was called
   var list = listeners.slice();
 
   for (var i = 0; i < length; ++i) {
@@ -92,8 +93,6 @@ function simpleWrap(original, list, length) {
   }
   inAsyncTick = false;
 
-  // still need to make sure nested async calls are made in the context
-  // of the listeners active at their creation
   return function() {
     listenerStack.push(listeners);
     listeners = union(list, listeners);
@@ -155,30 +154,13 @@ var asyncWrap = function asyncWrap(original, list, length) {
   }
   inAsyncTick = false;
 
-  /* One of the main differences between this polyfill and the core
-   * asyncListener support is that core avoids creating closures by putting a
-   * lot of the state managemnt on the C++ side of Node (and of course also it
-   * bakes support for async listeners into the Node C++ API through the
-   * AsyncWrap class, which means that it doesn't monkeypatch basically every
-   * async method like this does).
-   */
   return function() {
-    // put the current values where the catcher can see them
     errorValues = values;
 
-    /* More than one listener can end up inside these closures, so save the
-     * current listeners on a stack.
-     */
     listenerStack.push(listeners);
 
-    /* Activate both the listeners that were active when the closure was
-     * created and the listeners that were previously active.
-     */
     listeners = union(list, listeners);
 
-    /*
-     * before handlers
-     */
     inAsyncTick = true;
     for (var i = 0; i < length; ++i) {
       if ((list[i].flags & HAS_BEFORE_AL) > 0) {
@@ -187,12 +169,8 @@ var asyncWrap = function asyncWrap(original, list, length) {
     }
     inAsyncTick = false;
 
-    // save the return value to pass to the after callbacks
     var returned = original.apply(this, arguments);
 
-    /*
-     * after handlers (not run if original throws)
-     */
     inAsyncTick = true;
     for (i = 0; i < length; ++i) {
       if ((list[i].flags & HAS_AFTER_AL) > 0) {
@@ -201,7 +179,6 @@ var asyncWrap = function asyncWrap(original, list, length) {
     }
     inAsyncTick = false;
 
-    // back to the previous listener list on the stack
     listeners = listenerStack.pop();
     errorValues = undefined;
 
