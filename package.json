@@ -13,5 +13,10 @@
     "cmd"
   ],
   "author": "Carlis Liu",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "rollup-plugin-commonjs": "^5.0.5",
+    "rollup-plugin-json": "^2.0.2",
+    "rollup-plugin-node-resolve": "^2.0.0"
+  }
 }
