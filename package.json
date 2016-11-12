@@ -1,0 +1,17 @@
+{
+  "name": "wrap-define",
+  "version": "0.0.1",
+  "description": "wrap amd,cmd to capture module id when error occurs within module factory function.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'test'"
+  },
+  "keywords": [
+    "module",
+    "id",
+    "amd",
+    "cmd"
+  ],
+  "author": "Carlis Liu",
+  "license": "MIT"
+}
