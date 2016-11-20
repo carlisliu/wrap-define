@@ -19,7 +19,7 @@ function Interceptor(callbacks, data) {
     }
     if (typeof callbacks.error) {
         this.error = callbacks.error;
-        this.error = HAS_ERROR_CALLBACK;
+        this.flags = HAS_ERROR_CALLBACK;
     }
 
     this.data = data;
@@ -36,7 +36,7 @@ export function createAsyncInterceptor(callbacks, data) {
         return;
     }
     if (typeof callbacks !== 'object' || !callbacks) {
-        throw new TypeError('callbacks argument must be an object');
+        throw new TypeError('callbacks arguments must be an object');
     }
     interceptor = new Interceptor(callbacks, data);
     return interceptor;
@@ -55,7 +55,15 @@ function aysncWrap(original) {
         if ((interceptor.flags & HAS_BEFORE_CALLBACK) !== 0) {
             interceptor.before(this, value);
         }
-        var result = original.apply(this, argument);
+        try {
+            var result = original.apply(this, arguments);
+        } catch (error) {
+            if ((interceptor.flags & HAS_ERROR_CALLBACK) !== 0) {
+                interceptor.error(value, error);
+            }
+            throw error;
+        }
+
         if ((interceptor.flags & HAS_AFTER_CALLBACK) !== 0) {
             interceptor.after(this, value);
         }
