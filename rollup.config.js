@@ -19,6 +19,6 @@ export default {
     commonjs()
   ],
   dest: 'dist/bundle.js',
-  moduleName: 'TINGYUN',
+  moduleName: 'newDefine',
   interop: false
 };
