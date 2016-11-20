@@ -24,7 +24,7 @@ Context.prototype = {
         return this.active[key];
     },
     bind: function(fn, context) {
-        context = this.active || Object.create(this.context);
+        context = this.active || Object.create(this.active);
         var self = this;
         return function() {
             self.enter(context);
