@@ -31,7 +31,7 @@ prototype.create = prototype.before = prototype.after = prototype.error = null;
 var interceptor;
 var errorValue;
 
-export default function createAsyncInterceptor(callbacks, data) {
+export function createAsyncInterceptor(callbacks, data) {
     if (interceptor) {
         return;
     }
@@ -63,7 +63,7 @@ function aysncWrap(original) {
     }
 }
 
-export.wrapCallback = function(original) {
+export function wrapCallback(original) {
     if (!interceptor || interceptor.flags <= 0) {
         return original;
     }

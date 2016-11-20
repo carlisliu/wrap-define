@@ -1,5 +1,7 @@
 import createContext from './context';
-import wrapCallback from './async-listener';
+import {
+    wrapCallback
+} from './interceptor';
 
 var context = createContext();
 

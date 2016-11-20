@@ -1,4 +1,6 @@
-import addAsyncListener from './async-listener';
+import {
+    createAsyncInterceptor
+} from './interceptor';
 
 function Context(name) {
     this.name = name;
@@ -71,7 +73,7 @@ Context.prototype = {
 
 export default function create(name) {
     var context = new Context(name);
-    context.id = addAsyncListener({
+    context.id = createAsyncInterceptor({
         create: function() {
             return context.active;
         },
