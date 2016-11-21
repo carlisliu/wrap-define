@@ -1,3 +1,3 @@
 # wrap-define
 
-## AMC & CMD
+## AMD & CMD
