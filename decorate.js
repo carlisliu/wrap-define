@@ -5,17 +5,22 @@ import {
 
 var context = createContext();
 
+var addEventListener = window.EventTarget.prototype.addEventListener;
+window.EventTarget.prototype.addEventListener = function(event, listener, captured) {
+    arguments[1] = wrapCallback(listener);
+    return addEventListener.apply(this, arguments);
+};
+
 export default function decorate(define) {
-    var proxy = context.bind(function(id, deps, factory) {
-        var moduleId = '';
+    return function(id, deps, factory) {
         if (typeof id === 'string' && isArray(deps) && typeof factory === 'function') {
-            moduleId = id;
-            arguments[2] = wrapCallback(factory);
+            arguments[2] = context.bind(function() {
+                context.set('moduleId', id);
+                return wrapCallback(factory).apply(this, arguments);
+            });
         }
-        context.set('moduleId', moduleId);
         return define.apply(this, arguments);
-    });
-    return proxy;
+    }
 }
 
 function isArray(target) {
