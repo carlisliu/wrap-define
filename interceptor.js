@@ -21,7 +21,6 @@ function Interceptor(callbacks, data) {
         this.error = callbacks.error;
         this.flags = HAS_ERROR_CALLBACK;
     }
-
     this.data = data;
 }
 
