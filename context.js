@@ -88,11 +88,11 @@ export default function create(name) {
             }
         },
         error: function(storage, error) {
-            if (error && error['__context__']) {
-                error['moduleId'] = error['__context__'];
-            }
             if (storage) {
                 context.exit(storage);
+                if (error && storage['moduleId']) {
+                    error['moduleId'] = storage['moduleId'];
+                }
             }
         }
     });
