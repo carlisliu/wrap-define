@@ -19,7 +19,7 @@ function Interceptor(callbacks, data) {
     }
     if (typeof callbacks.error) {
         this.error = callbacks.error;
-        this.flags = HAS_ERROR_CALLBACK;
+        this.flags |= HAS_ERROR_CALLBACK;
     }
     this.data = data;
 }
