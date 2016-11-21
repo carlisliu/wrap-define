@@ -62,7 +62,6 @@ function aysncWrap(original) {
             }
             throw error;
         }
-
         if ((interceptor.flags & HAS_AFTER_CALLBACK) !== 0) {
             interceptor.after(this, value);
         }
