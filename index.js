@@ -18,7 +18,8 @@ function wrapDefine() {
             }
         });
         return;
-    } else if (property.configurable === false) {
+    }
+    if (property.configurable === false) {
         return;
     }
 
@@ -27,7 +28,7 @@ function wrapDefine() {
     if (!getter || !setter) {
         return;
     }
-    
+
     Object.defineProperty(window, 'define', {
         get: function() {
             return getter.apply(this, arguments);
@@ -37,4 +38,5 @@ function wrapDefine() {
         }
     });
 }
+
 export default wrapDefine();
