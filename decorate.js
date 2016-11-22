@@ -2,6 +2,7 @@ import createContext from './context';
 import {
     wrapCallback
 } from './interceptor';
+import window from 'window';
 
 var context = createContext();
 
