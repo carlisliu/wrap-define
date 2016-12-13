@@ -1,6 +1,6 @@
 {
   "name": "wrap-define",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "wrap amd,cmd to capture module id when error occurs within module factory function.",
   "main": "index.js",
   "scripts": {
@@ -15,8 +15,5 @@
   "author": "Carlis Liu",
   "license": "MIT",
   "devDependencies": {
-    "rollup-plugin-commonjs": "^5.0.5",
-    "rollup-plugin-json": "^2.0.2",
-    "rollup-plugin-node-resolve": "^2.0.0"
   }
 }
