@@ -5,19 +5,19 @@ var HAS_ERROR_CALLBACK = 1 << 3;
 
 function Interceptor(callbacks, data) {
     this.flags = 0;
-    if (typeof callbacks.create) {
+    if (typeof callbacks.create === 'function') {
         this.create = callbacks.create;
         this.flags |= HAS_CREATE_CALLBACK;
     }
-    if (typeof callbacks.before) {
+    if (typeof callbacks.before === 'function') {
         this.before = callbacks.before;
         this.flags |= HAS_BEFORE_CALLBACK;
     }
-    if (typeof callbacks.after) {
+    if (typeof callbacks.after === 'function') {
         this.after = callbacks.after;
         this.flags |= HAS_AFTER_CALLBACK;
     }
-    if (typeof callbacks.error) {
+    if (typeof callbacks.error === 'function') {
         this.error = callbacks.error;
         this.flags |= HAS_ERROR_CALLBACK;
     }
