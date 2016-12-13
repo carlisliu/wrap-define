@@ -6,11 +6,43 @@ import window from 'window';
 
 var context = createContext();
 
-var addEventListener = window.EventTarget.prototype.addEventListener;
-window.EventTarget.prototype.addEventListener = function(event, listener, captured) {
-    arguments[1] = wrapCallback(listener);
-    return addEventListener.apply(this, arguments);
-};
+if (window.EventTarget) {
+    wrap(window.EventTarget.prototype, 'addEventListener', function(addEventListener) {
+        return function(event, listener, captured) {
+            arguments[1] = wrapCallback(listener);
+            return addEventListener.apply(this, arguments);
+        }
+    });
+}
+
+wrap(window, ['setTimeout', 'setInterval'], function(timer) {
+    return function(listener) {
+        if (typeof listener === 'function') {
+            arguments[0] = wrapCallback(listener);
+        }
+        return timer.apply(this, arguments);
+    }
+});
+
+function wrap(module, methods, wrapper) {
+    if (!module || !methods) {
+        return;
+    }
+    if (typeof wrapper !== 'function') {
+        return;
+    }
+    if (!isArray(methods)) {
+        methods = [methods];
+    }
+    for (var i = methods.length - 1; i >= 0; i--) {
+        var method = methods[i];
+        var original = module[method];
+        if (!original || typeof original !== 'function') {
+            continue;
+        }
+        module[method] = wrapper(original, method);
+    }
+}
 
 export default function decorate(define) {
     return function(id, deps, factory) {
