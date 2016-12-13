@@ -1,7 +1,7 @@
 import window from 'window';
 import decorate from './decorate';
 
-function wrapDefine() {
+export default function wrapDefine() {
     if (!Object.getOwnPropertyDescriptor) {
         return;
     }
@@ -38,5 +38,3 @@ function wrapDefine() {
         }
     });
 }
-
-export default wrapDefine();
