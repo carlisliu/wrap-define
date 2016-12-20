@@ -1,6 +1,6 @@
 {
   "name": "wrap-define",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "wrap amd,cmd to capture module id when error occurs within module factory function.",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,7 @@
   "license": "MIT",
   "devDependencies": {},
   "dependencies": {
+    "func-wrapper": "^1.0.0",
     "js-is-type": "^2.0.0"
   }
 }
