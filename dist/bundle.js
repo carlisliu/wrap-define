@@ -8,19 +8,19 @@ var HAS_ERROR_CALLBACK = 1 << 3;
 
 function Interceptor(callbacks, data) {
     this.flags = 0;
-    if (typeof callbacks.create) {
+    if (typeof callbacks.create === 'function') {
         this.create = callbacks.create;
         this.flags |= HAS_CREATE_CALLBACK;
     }
-    if (typeof callbacks.before) {
+    if (typeof callbacks.before === 'function') {
         this.before = callbacks.before;
         this.flags |= HAS_BEFORE_CALLBACK;
     }
-    if (typeof callbacks.after) {
+    if (typeof callbacks.after === 'function') {
         this.after = callbacks.after;
         this.flags |= HAS_AFTER_CALLBACK;
     }
-    if (typeof callbacks.error) {
+    if (typeof callbacks.error === 'function') {
         this.error = callbacks.error;
         this.flags |= HAS_ERROR_CALLBACK;
     }
@@ -176,17 +176,62 @@ function create(name) {
     return context;
 }
 
+function isType(type) {
+    return function(arg) {
+        if (type === 'Array' && Array.isArray) {
+            return Array.isArray;
+        }
+        return Object.prototype.toString.call(arg) === "[object " + type + "]";
+    }
+}
+
+var isString = isType('String');
+var isArray = isType('Array');
+var isFunction = isType('Function');
+
 var context = create();
 
-var addEventListener = window.EventTarget.prototype.addEventListener;
-window.EventTarget.prototype.addEventListener = function(event, listener, captured) {
-    arguments[1] = wrapCallback(listener);
-    return addEventListener.apply(this, arguments);
-};
+if (window.EventTarget) {
+    wrap(window.EventTarget.prototype, 'addEventListener', function(addEventListener) {
+        return function(event, listener, captured) {
+            arguments[1] = wrapCallback(listener);
+            return addEventListener.apply(this, arguments);
+        }
+    });
+}
+
+wrap(window, ['setTimeout', 'setInterval'], function(timer) {
+    return function(listener) {
+        if (isFunction(listener)) {
+            arguments[0] = wrapCallback(listener);
+        }
+        return timer.apply(this, arguments);
+    }
+});
+
+function wrap(module, methods, wrapper) {
+    if (!module || !methods) {
+        return;
+    }
+    if (!isFunction(wrapper)) {
+        return;
+    }
+    if (!isArray(methods)) {
+        methods = [methods];
+    }
+    for (var i = methods.length - 1; i >= 0; i--) {
+        var method = methods[i];
+        var original = module[method];
+        if (!original || !isFunction(original)) {
+            continue;
+        }
+        module[method] = wrapper(original, method);
+    }
+}
 
 function decorate(define) {
     return function(id, deps, factory) {
-        if (typeof id === 'string' && isArray(deps) && typeof factory === 'function') {
+        if (isString(id) && isArray(deps) && isFunction(factory)) {
             arguments[2] = context.bind(function() {
                 context.set('moduleId', id);
                 return wrapCallback(factory).apply(this, arguments);
@@ -196,50 +241,45 @@ function decorate(define) {
     }
 }
 
-function isArray(target) {
-    return Array.isArray ? Array.isArray(target) : ({}).toString.call(target) === '[object Array]';
-}
-
 function wrapDefine() {
     if (!Object.getOwnPropertyDescriptor) {
         return;
     }
-
     var property = Object.getOwnPropertyDescriptor(window, 'define');
     if (!property) {
-        var define = window.define;
-        Object.defineProperty(window, 'define', {
-            get: function() {
-                return define;
-            },
-            set: function(newDefine) {
-                define = decorate(newDefine);
-            }
-        });
-        return;
+        return definition();
     }
     if (property.configurable === false) {
         return;
     }
-
     var getter = property.getter;
     var setter = property.setter;
     if (!getter || !setter) {
         return;
     }
-
     Object.defineProperty(window, 'define', {
         get: function() {
             return getter.apply(this, arguments);
         },
         set: function(define) {
             return setter.apply(this, decorate(define));
+        },
+        configurable: true
+    });
+}
+
+function definition() {
+    var define = window.define;
+    Object.defineProperty(window, 'define', {
+        get: function() {
+            return define;
+        },
+        set: function(newDefine) {
+            define = decorate(newDefine);
         }
     });
 }
 
-var index = wrapDefine();
-
-return index;
+return wrapDefine;
 
 }(window));
