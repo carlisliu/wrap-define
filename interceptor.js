@@ -1,3 +1,8 @@
+import {
+    isFunction,
+    isObject
+} from 'js-is-type';
+
 var HAS_CREATE_CALLBACK = 1 << 0;
 var HAS_BEFORE_CALLBACK = 1 << 1;
 var HAS_AFTER_CALLBACK = 1 << 2;
@@ -5,19 +10,19 @@ var HAS_ERROR_CALLBACK = 1 << 3;
 
 function Interceptor(callbacks, data) {
     this.flags = 0;
-    if (typeof callbacks.create === 'function') {
+    if (isFunction(callbacks.create)) {
         this.create = callbacks.create;
         this.flags |= HAS_CREATE_CALLBACK;
     }
-    if (typeof callbacks.before === 'function') {
+    if (isFunction(callbacks.before)) {
         this.before = callbacks.before;
         this.flags |= HAS_BEFORE_CALLBACK;
     }
-    if (typeof callbacks.after === 'function') {
+    if (isFunction(callbacks.after)) {
         this.after = callbacks.after;
         this.flags |= HAS_AFTER_CALLBACK;
     }
-    if (typeof callbacks.error === 'function') {
+    if (isFunction(callbacks.error)) {
         this.error = callbacks.error;
         this.flags |= HAS_ERROR_CALLBACK;
     }
@@ -34,7 +39,7 @@ export function createAsyncInterceptor(callbacks, data) {
     if (interceptor) {
         return;
     }
-    if (typeof callbacks !== 'object' || !callbacks) {
+    if (!isObject(callbacks) || !callbacks) {
         throw new TypeError('callbacks arguments must be an object');
     }
     interceptor = new Interceptor(callbacks, data);
