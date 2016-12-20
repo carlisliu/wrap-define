@@ -8,6 +8,7 @@ import {
     isArray,
     isString
 } from 'js-is-type'
+import wrap from 'func-wrapper';
 
 var context = createContext();
 
@@ -20,7 +21,7 @@ if (window.EventTarget) {
     });
 }
 
-wrap(window, ['setTimeout', 'setInterval'], function(timer) {
+massWrap(window, ['setTimeout', 'setInterval'], function(timer) {
     return function(listener) {
         if (isFunction(listener)) {
             arguments[0] = wrapCallback(listener);
@@ -29,23 +30,12 @@ wrap(window, ['setTimeout', 'setInterval'], function(timer) {
     }
 });
 
-function wrap(module, methods, wrapper) {
-    if (!module || !methods) {
-        return;
-    }
-    if (!isFunction(wrapper)) {
-        return;
-    }
+function massWrap(module, methods, wrapper) {
     if (!isArray(methods)) {
         methods = [methods];
     }
     for (var i = methods.length - 1; i >= 0; i--) {
-        var method = methods[i];
-        var original = module[method];
-        if (!original || !isFunction(original)) {
-            continue;
-        }
-        module[method] = wrapper(original, method);
+        wrap(module, methods[i], wrapper);
     }
 }
 
