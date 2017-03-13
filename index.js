@@ -1,5 +1,6 @@
 import window from 'window';
 import decorate from './decorate';
+import wrap from 'func-wrapper';
 
 export default function wrapDefine() {
     if (!Object.getOwnPropertyDescriptor) {
@@ -17,6 +18,8 @@ export default function wrapDefine() {
             }
         });
     } else {
-        window.define = decorate(define);
+        wrap(window, 'define', function(define) {
+            return decorate(define);
+        });
     }
 }
