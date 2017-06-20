@@ -35,7 +35,7 @@ In a browser:
         });
 
         require(['load']);
-        require(['last']);
+        //require(['last']);
     </script>
 </body>
 </html>
