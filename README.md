@@ -23,7 +23,6 @@ In a browser:
             console.log('preload');
         });
         define('load', ['preload'], function () {
-            //throw new Error('load error');
             window.addEventListener('click', function (e) {
                 throw new Error('click error');
             });
