@@ -90,8 +90,9 @@ export default function create(name) {
         error: function(storage, error) {
             if (storage) {
                 context.exit(storage);
-                if (error && storage['moduleId']) {
-                    error['moduleId'] = storage['moduleId'];
+                var key = 'moduleId';
+                if (error && storage[key]) {
+                    error[key] = storage[key];
                 }
             }
         }
